@@ -621,6 +621,12 @@ section,
 /*--------------------------------------------------------------
 # About Section
 --------------------------------------------------------------*/
+.about {
+  z-index: 0;
+  background: url(/assets/img/hero-bg.jpg);
+  color: #ffffff;
+}
+
 .about .content h2 {
   font-weight: 700;
   font-size: 24px;
