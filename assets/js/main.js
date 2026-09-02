@@ -89,6 +89,26 @@
   }
   window.addEventListener('load', aosInit);
 
+  function eclipse() {
+    let A = document.querySelector("[data-exe-visor]");
+    if (!A)
+        return;
+    m.set(A, {
+        clipPath: "ellipse(70% 0% at 50% 0%)"
+    }),
+    m.to(A, {
+        clipPath: "ellipse(70% 100% at 50% 0%)",
+        ease: "none",
+        scrollTrigger: {
+            trigger: A,
+            start: "top bottom",
+            end: "bottom center",
+            scrub: !0
+        }
+    })
+  }
+  window.addEventListener("load", eclipse);
+
   /**
    * Init typed.js
    */
@@ -225,5 +245,75 @@
   }
   window.addEventListener('load', navmenuScrollspy);
   document.addEventListener('scroll', navmenuScrollspy);
+  
+  /**
+   * Theme-switch
+   */
+  let darkmode = localStorage.getItem('dark-background')
+  const themeSwitch = document.getElementById('theme-switch')
+  const enableDarkmode = () => {
+  document.body.classList.add('dark-background')
+  localStorage.setItem('dark-background', 'active')
+  }
+
+  const disableDarkmode = () => {
+  document.body.classList.remove('dark-background')
+  localStorage.setItem('dark-background', null)
+  }
+
+  if(darkmode === "active") enableDarkmode()
+
+  themeSwitch.addEventListener("click", () => {
+    darkmode = localStorage.getItem('dark-background')
+    darkmode !== "active" ? enableDarkmode() : disableDarkmode()
+  })
+
+  /**
+   * Theme-switch
+   */
+
+  document.querySelectorAll('.skill-item').forEach(item => {
+  const iconWrap = item.querySelector('.skill-icon-wrap');
+
+  item.addEventListener('mousemove', (e) => {
+    const rect = item.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+
+    const rotateX = ((y - centerY) / centerY) * -18; // maksimal miring 18deg
+    const rotateY = ((x - centerX) / centerX) * 18;
+
+    iconWrap.style.transform =
+      `rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateZ(24px) scale(1.32)`;
+    });
+
+    item.addEventListener('mouseleave', () => {
+      iconWrap.style.transform = ''; // balik netral, transition CSS yang handle smooth-nya
+    });
+  });
+
+  console.log(`%c
+    __    __ __    __  ______  __    __ __    __ __       
+  |  \\  |  \\  \\  |  \\/      \\|  \\  |  \\  \\  |  \\  \\      
+  | ▓▓  | ▓▓ ▓▓  | ▓▓  ▓▓▓▓▓▓\\ ▓▓\\ | ▓▓ ▓▓  | ▓▓ ▓▓      
+  | ▓▓__| ▓▓ ▓▓  | ▓▓ ▓▓___\\▓▓ ▓▓▓\\| ▓▓ ▓▓  | ▓▓ ▓▓      
+  | ▓▓    ▓▓ ▓▓  | ▓▓\\▓▓    \\| ▓▓▓▓\\ ▓▓ ▓▓  | ▓▓ ▓▓      
+  | ▓▓▓▓▓▓▓▓ ▓▓  | ▓▓_\\▓▓▓▓▓▓\\ ▓▓\\▓▓ ▓▓ ▓▓  | ▓▓ ▓▓      
+  | ▓▓  | ▓▓ ▓▓__/ ▓▓  \\__| ▓▓ ▓▓ \\▓▓▓▓ ▓▓__/ ▓▓ ▓▓_____ 
+  | ▓▓  | ▓▓\\▓▓    ▓▓\\▓▓    ▓▓ ▓▓  \\▓▓▓\\▓▓    ▓▓ ▓▓     \\
+   \\▓▓   \\▓▓ \\▓▓▓▓▓▓  \\▓▓▓▓▓▓ \\▓▓   \\▓▓ \\▓▓▓▓▓▓ \\▓▓▓▓▓▓▓▓
+  %c
+    __    __  ______  _______  ______ _______  ______ ________ 
+  |  \\  |  \\/      \\|       \\|      \\       \\|      \\        \\
+  | ▓▓  | ▓▓  ▓▓▓▓▓▓\\ ▓▓▓▓▓▓▓\\\\▓▓▓▓▓▓ ▓▓▓▓▓▓▓\\\\▓▓▓▓▓▓ ▓▓▓▓▓▓▓▓
+  | ▓▓__| ▓▓ ▓▓__| ▓▓ ▓▓__/ ▓▓ | ▓▓ | ▓▓__/ ▓▓ | ▓▓ | ▓▓__    
+  | ▓▓    ▓▓ ▓▓    ▓▓ ▓▓    ▓▓ | ▓▓ | ▓▓    ▓▓ | ▓▓ | ▓▓  \\   
+  | ▓▓▓▓▓▓▓▓ ▓▓▓▓▓▓▓▓ ▓▓▓▓▓▓▓\\ | ▓▓ | ▓▓▓▓▓▓▓\\ | ▓▓ | ▓▓▓▓▓   
+  | ▓▓  | ▓▓ ▓▓  | ▓▓ ▓▓__/ ▓▓_| ▓▓_| ▓▓__/ ▓▓_| ▓▓_| ▓▓_____ 
+  | ▓▓  | ▓▓ ▓▓  | ▓▓ ▓▓    ▓▓   ▓▓ \\ ▓▓    ▓▓   ▓▓ \\ ▓▓     \\
+   \\▓▓   \\▓▓\\▓▓   \\▓▓\\▓▓▓▓▓▓▓ \\▓▓▓▓▓▓\\▓▓▓▓▓▓▓ \\▓▓▓▓▓▓\\▓▓▓▓▓▓▓▓
+  %c%c`, "color: #31ff31; font: 100 1em monospace;", "", "background-color: #31ff31; color: black; font: 500 1em monospace; font-weight: bold;", "")
 
 })();
