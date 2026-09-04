@@ -269,7 +269,7 @@
   })
 
   /**
-   * Theme-switch
+   * Design-skill-section
    */
 
   document.querySelectorAll('.skill-item').forEach(item => {
@@ -287,12 +287,119 @@
 
     iconWrap.style.transform =
       `rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateZ(24px) scale(1.32)`;
-    });
+    });    
 
     item.addEventListener('mouseleave', () => {
       iconWrap.style.transform = ''; // balik netral, transition CSS yang handle smooth-nya
     });
   });
+
+  /**
+   * Design-project-section
+   */
+
+  // 3D tilt di project card — pakai custom property, BUKAN transform langsung
+  // (biar gak bentrok sama transform lain, sesuai prinsip yang sudah dibahas)
+  document.querySelectorAll('.project-card').forEach(card => {
+    card.addEventListener('mousemove', (e) => {
+      const rect = card.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      const rotateX = ((y - rect.height / 2) / rect.height) * -6;
+      const rotateY = ((x - rect.width / 2) / rect.width) * 6;
+      card.style.setProperty('--tilt-x', `${rotateX}deg`);
+      card.style.setProperty('--tilt-y', `${rotateY}deg`);
+    });
+
+    card.addEventListener('mouseleave', () => {
+      card.style.setProperty('--tilt-x', '0deg');
+      card.style.setProperty('--tilt-y', '0deg');
+    });
+  });
+
+  // Modal detail project
+  const modal = document.getElementById('projectModal');
+  const modalImage = document.getElementById('modalImage');
+  const modalCategory = document.getElementById('modalCategory');
+  const modalTitle = document.getElementById('modalTitle');
+  const modalRole = document.getElementById('modalRole');
+  const modalDuration = document.getElementById('modalDuration');
+  const modalDesc = document.getElementById('modalDesc');
+  const modalStack = document.getElementById('modalStack');
+  const modalLive = document.getElementById('modalLive');
+  const modalPdf = document.getElementById('modalPdf');
+
+  const techLabels = {
+    html5: 'HTML', css3: 'CSS', bootstrap: 'Bootstrap', tailwindcss: 'Tailwind',
+    javascript: 'JavaScript', react: 'React', php: 'PHP', laravel: 'Laravel',
+    mysql: 'MySQL', python: 'Python', csharp: 'C#'
+  };
+
+  document.querySelectorAll('.project-open-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const d = btn.dataset;
+
+      modalImage.src = d.image;
+      modalImage.alt = d.title;
+      modalCategory.textContent = d.category || '';
+      modalTitle.textContent = d.title || '';
+      modalRole.textContent = d.role || '-';
+      modalDuration.textContent = d.duration || '-';
+      modalDesc.textContent = d.desc || '';
+
+      modalStack.innerHTML = '';
+      if (d.tech) {
+        d.tech.split(',').forEach(t => {
+          const key = t.trim();
+          const span = document.createElement('span');
+          span.innerHTML = `<i class="devicon-${key}-plain colored"></i> ${techLabels[key] || key}`;
+          modalStack.appendChild(span);
+        });
+      }
+
+      if (d.live) {
+        modalLive.href = d.live;
+        modalLive.style.display = 'inline-flex';
+      } else {
+        modalLive.style.display = 'none';
+      }
+
+      if (d.pdf) {
+        modalPdf.href = d.pdf;
+        modalPdf.style.display = 'inline-flex';
+      } else {
+        modalPdf.style.display = 'none';
+      }
+
+      openModal();
+    });
+  });
+
+  function openModal() {
+    modal.classList.add('is-open');
+    modal.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeModal() {
+    modal.classList.remove('is-open');
+    modal.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+  }
+
+  modal.querySelectorAll('[data-close]').forEach(el => {
+    el.addEventListener('click', closeModal);
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal.classList.contains('is-open')) {
+      closeModal();
+    }
+  });
+
+   /**
+   * Design-consol-log
+    */  
 
   console.log(`%c
     __    __ __    __  ______  __    __ __    __ __       
