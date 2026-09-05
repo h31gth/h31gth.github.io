@@ -335,11 +335,25 @@
     mysql: 'MySQL', python: 'Python', csharp: 'C#'
   };
 
+  let currentBlobUrl = '';
+
   document.querySelectorAll('.project-open-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
+    btn.addEventListener('click', async () => {
       const d = btn.dataset;
 
-      modalImage.src = d.image;
+      if (currentBlobUrl) {
+        URL.revokeObjectURL(currentBlobUrl);
+      }
+
+      try {
+        const res = await fetch(d.image);
+        const blob = await res.blob();
+        modalImage.src = URL.createObjectURL(blob);
+      } catch (err) {
+        console.error('Gagal load gambar:', err);
+        modalImage.src = ''; // fallback, biar gak nampilin gambar rusak
+      }
+
       modalImage.alt = d.title;
       modalCategory.textContent = d.category || '';
       modalTitle.textContent = d.title || '';
@@ -397,8 +411,79 @@
     }
   });
 
+ /**
+   * Design-certificate-section
+   */
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const modal = document.getElementById('certModal');
+    const modalImg = document.getElementById('certModalImg');
+    const modalTitle = document.getElementById('certModalTitle');
+    const modalDesc = document.getElementById('certModalDesc');
+    const modalYear = document.getElementById('certModalYear');
+    const modalSkill = document.getElementById('certModalSkill');
+
+    document.addEventListener('click', (e) => {
+      const btn = e.target.closest('[data-open-cert]');
+      if (btn) {
+        modalImg.src = btn.dataset.image;
+        modalImg.alt = btn.dataset.title;
+        modalTitle.textContent = btn.dataset.title;
+        modalDesc.textContent = btn.dataset.desc;
+        modalYear.textContent = btn.dataset.year;
+        modalSkill.textContent = btn.dataset.skill;
+        modal.classList.add('is-open');
+        modal.setAttribute('aria-hidden', 'false');
+        return;
+      }
+
+      if (e.target.closest('[data-close-cert]')) {
+        modal.classList.remove('is-open');
+        modal.setAttribute('aria-hidden', 'true');
+      }
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && modal.classList.contains('is-open')) {
+        modal.classList.remove('is-open');
+        modal.setAttribute('aria-hidden', 'true');
+      }
+    });
+  });
+
+ /**
+   * data-protect
+   */
+
+async function protectAllMedia() {
+  const images = document.querySelectorAll('img[data-protect]');
+  const videos = document.querySelectorAll('video[data-protect]');
+
+  const convert = async (el) => {
+    const res = await fetch(el.dataset.protect);
+    const blob = await res.blob();
+    el.src = URL.createObjectURL(blob);
+    el.removeAttribute('data-protect');
+  };
+
+  await Promise.all([...images, ...videos].map(convert));
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  protectAllMedia();
+});
+
+ /**
+   * right-click-protect
+   */
+
+document.querySelectorAll('img').forEach(img => {
+  img.addEventListener('contextmenu', (e) => e.preventDefault());
+  img.setAttribute('draggable', 'false');
+});
+
    /**
-   * Design-consol-log
+   * Copyright-console-log
     */  
 
   console.log(`%c
